@@ -134,7 +134,7 @@ Flow:
 
 - arrow/page navigation
 - Enter to select
-- Delete to delete after confirmation
+- Ctrl+Backspace to delete after confirmation
 - Esc to cancel
 - Ctrl+C to exit
 - fuzzy search across session id/title/cwd/first message/all messages/path

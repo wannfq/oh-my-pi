@@ -182,6 +182,15 @@ class SessionList implements Component {
 	}
 
 	handleInput(keyData: string): void {
+		// Ctrl+Backspace when search is empty -> delete selected session
+		if (matchesKey(keyData, "ctrl+backspace") && this.#searchInput.getValue().length === 0) {
+			const selected = this.#filteredSessions[this.#selectedIndex];
+			if (selected && this.onDeleteRequest) {
+				this.onDeleteRequest(selected);
+			}
+			return;
+		}
+
 		// Delete key - request delete confirmation from parent
 		if (matchesKey(keyData, "delete")) {
 			const selected = this.#filteredSessions[this.#selectedIndex];

@@ -194,6 +194,7 @@ Notes:
 
 - This picker only lists sessions in the current session directory scope.
 - It does not use global cross-project search.
+- Sessions can be deleted with Ctrl+Backspace when the search filter is empty (or Del on external keyboards).
 
 ## CLI `--resume`
 

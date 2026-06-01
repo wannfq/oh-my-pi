@@ -42,3 +42,15 @@ app.stt.toggle: []
 | `app.stt.toggle`            | `Alt+H`                       | Toggle speech-to-text recording               |
 
 Older unqualified action names are migrated when `keybindings.yml` is loaded, but new docs and new configs should use the namespaced action IDs above. Existing `keybindings.json` files are still accepted and migrated to `keybindings.yml`; `keybindings.yaml` is also accepted.
+
+## Selector keybindings
+
+In session pickers, file pickers, and other list-selector UI components:
+
+| Action | Key | Context |
+| --- | --- | --- |
+| Delete | `Ctrl+Backspace` or Del | Empty search filter |
+| Navigate | `Up` / `Down` | Always |
+| Select | `Enter` | Always |
+| Cancel | `Esc` | Always |
+| Filter | Type to search | Always |
