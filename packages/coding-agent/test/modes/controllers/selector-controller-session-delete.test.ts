@@ -231,6 +231,65 @@ describe("SelectorController session deletion", () => {
 		expect(renderText(selector)).toContain("Active session");
 	});
 
+	it("triggers delete on ctrl+backspace when search is empty", async () => {
+		const sessions = [
+			makeSessionInfo("/tmp/project/sessions/a.jsonl"),
+			makeSessionInfo("/tmp/project/sessions/b.jsonl"),
+		];
+		const { ctx } = createContext("/tmp/project/sessions/other.jsonl");
+		vi.spyOn(SessionManager, "list").mockResolvedValue(sessions);
+		const controller = new SelectorController(ctx);
+
+		await controller.showSessionSelector();
+		const selector = ctx.editorContainer.children[0];
+		if (!(selector instanceof SessionSelectorComponent)) {
+			throw new Error("Expected session selector component");
+		}
+
+		const deleteSpy = vi.fn();
+		const sessionList = selector.getSessionList() as unknown as {
+			handleInput: (keyData: string) => void;
+			onDeleteRequest?: (session: SessionInfo) => void;
+		};
+		sessionList.onDeleteRequest = deleteSpy;
+
+		sessionList.handleInput("\x1b[27;5;127~");
+
+		expect(deleteSpy).toHaveBeenCalledTimes(1);
+		expect(deleteSpy).toHaveBeenCalledWith(expect.objectContaining({ path: "/tmp/project/sessions/a.jsonl" }));
+	});
+
+	it("does not trigger delete on ctrl+backspace when search is non-empty", async () => {
+		const sessions = [
+			makeSessionInfo("/tmp/project/sessions/a.jsonl"),
+			makeSessionInfo("/tmp/project/sessions/b.jsonl"),
+		];
+		const { ctx } = createContext("/tmp/project/sessions/other.jsonl");
+		vi.spyOn(SessionManager, "list").mockResolvedValue(sessions);
+		const controller = new SelectorController(ctx);
+
+		await controller.showSessionSelector();
+		const selector = ctx.editorContainer.children[0];
+		if (!(selector instanceof SessionSelectorComponent)) {
+			throw new Error("Expected session selector component");
+		}
+
+		const deleteSpy = vi.fn();
+		const sessionList = selector.getSessionList() as unknown as {
+			handleInput: (keyData: string) => void;
+			onDeleteRequest?: (session: SessionInfo) => void;
+		};
+		sessionList.onDeleteRequest = deleteSpy;
+
+		// Type a search filter character so the query is non-empty
+		sessionList.handleInput("x");
+		// Press ctrl+backspace - should delete word, NOT trigger session delete
+		deleteSpy.mockClear();
+		sessionList.handleInput("\x1b[27;5;127~");
+
+		expect(deleteSpy).not.toHaveBeenCalled();
+	});
+
 	it("creates a fresh session before deleting via slash command and then shows the selector", async () => {
 		const activeSessionPath = "/tmp/project/sessions/active.jsonl";
 		const { ctx, calls, showHookConfirm, newSession } = createContext(activeSessionPath);
